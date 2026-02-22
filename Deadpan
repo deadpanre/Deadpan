@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>deadpan | Global Fashion Marketplace</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;overscroll-behavior-y:none;background:#f9fafb}
+.hide-scrollbar::-webkit-scrollbar{display:none}
+.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.active-scale:active{transform:scale(0.96)}
+.safe-top{padding-top:env(safe-area-inset-top)}
+.safe-bottom{padding-bottom:env(safe-area-inset-bottom)}
+.fab{box-shadow:0 4px 20px rgba(255,35,0,0.4)}
+@keyframes slideUp{0%{transform:translateY(100%)}100%{transform:translateY(0)}}
+.animate-slide-up{animation:slideUp 0.3s ease-out}
+</style>
+</head>
+<body class="text-gray-900 safe-top safe-bottom">
+
+<!-- Status Bar -->
+<div class="fixed top-0 left-0 right-0 h-12 bg-white z-50 flex items-center justify-between px-6 text-sm font-medium safe-top">
+<span id="clock">9:41</span>
+<div class="flex items-center gap-1">
+<i class="fas fa-signal text-xs"></i>
+<i class="fas fa-wifi text-xs"></i>
+<i class="fas fa-battery-full text-xs"></i>
+</div>
+</div>
+<!-- Main App -->
+<div id="app" class="pt-12 pb-20 min-h-screen bg-gray-50">
+<!-- Header -->
+<header class="sticky top-12 bg-white z-40 border-b border-gray-100 px-4 py-3 flex items-center justify-between">
+<h1 class="text-2xl font-bold tracking-tight">deadpan</h1>
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active-scale">
+<i class="fas fa-search text-gray-600"></i>
+</button>
+<button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center active-scale relative">
+<i class="fas fa-shopping-bag text-gray-600"></i>
+<span class="absolute top-0 right-0 w-4 h-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">2</span>
+</button>
+</div>
+</header>
+
+<!-- Feed -->
+<div class="px-4 py-4 space-y-4">
+<!-- Stories -->
+<div class="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
+<button onclick="openSellingInterface()" class="flex-shrink-0 flex flex-col items-center gap-1 active-scale">
+<div class="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-orange-400 p-[2px]">
+<div class="w-full h-full rounded-full bg-white flex items-center justify-center">
+<i class="fas fa-plus text-red-500 text-xl"></i>
+</div>
+</div>
+<span class="text-xs font-medium">Sell</span>
+</button>
+<div class="flex-shrink-0 flex flex-col items-center gap-1">
+<div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden border-2 border-red-500">
+<img src="https://i.pravatar.cc/150?img=1" class="w-full h-full object-cover">
+</div>
+<span class="text-xs font-medium">You</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-1">
+<div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden border-2 border-gray-300">
+<img src="https://i.pravatar.cc/150?img=2" class="w-full h-full object-cover">
+</div>
+<span class="text-xs font-medium">Alex</span>
+</div>
+<div class="flex-shrink-0 flex flex-col items-center gap-1">
+<div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden border-2 border-gray-300">
+<img src="https://i.pravatar.cc/150?img=3" class="w-full h-full object-cover">
+</div>
+<span class="text-xs font-medium">Sam</span>
+</div>
+</div>
+
+<!-- Global Toggle -->
+<div class="bg-white rounded-2xl p-4 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+<i class="fas fa-globe"></i>
+</div>
+<div>
+<p class="font-bold text-sm">Global Marketplace</p>
+<p class="text-xs text-gray-500">180 countries • 25 currencies</p>
+</div>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input type="checkbox" checked class="sr-only peer">
+<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-500"></div>
+</label>
+</div>
+
+<!-- Products -->
+<div class="space-y-4" id="productList"></div>
+</div>
+</div>
+<!-- SELLING INTERFACE -->
+<div id="sellingInterface" class="fixed inset-0 bg-black z-[100] hidden flex-col">
+
+<!-- Step 1: Photos -->
+<div id="stepPhoto" class="flex-1 flex flex-col bg-black">
+<div class="flex items-center justify-between p-4 pt-12 text-white">
+<button onclick="closeSellingInterface()" class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center active-scale">
+<i class="fas fa-times"></i>
+</button>
+<span class="font-semibold">1/4 Photos</span>
+<button onclick="nextStep()" class="px-4 py-2 bg-white text-black rounded-full font-semibold text-sm active-scale disabled:opacity-50" id="photoNextBtn" disabled>Next</button>
+</div>
+
+<div class="flex-1 relative mx-4 mb-4 rounded-2xl overflow-hidden bg-gray-900">
+<div id="cameraPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-white/60">
+<i class="fas fa-camera text-4xl mb-2"></i>
+<p class="text-sm">Tap to capture or upload</p>
+</div>
+<img id="mainPreview" class="w-full h-full object-cover hidden">
+<div class="absolute bottom-6 left-0 right-0 flex items-center justify-center gap-6">
+<button onclick="triggerFileInput()" class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white active-scale">
+<i class="fas fa-images"></i>
+</button>
+<button onclick="triggerFileInput()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center active-scale">
+<div class="w-16 h-16 rounded-full bg-white"></div>
+</button>
+<button class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white active-scale">
+<i class="fas fa-sync-alt"></i>
+</button>
+</div>
+</div>
+
+<div class="bg-black p-4 pb-8">
+<div class="flex gap-2 overflow-x-auto hide-scrollbar" id="photoThumbnails">
+<button onclick="triggerFileInput()" class="flex-shrink-0 w-20 h-20 rounded-xl border-2 border-dashed border-white/30 flex flex-col items-center justify-center text-white/60 active-scale">
+<i class="fas fa-plus mb-1"></i>
+<span class="text-[10px]">Add</span>
+</button>
+</div>
+<input type="file" id="mobileFileInput" multiple accept="image/*" class="hidden" onchange="handleMobilePhotos(this)">
+</div>
+</div>
+<!-- Step 2: Details -->
+<div id="stepDetails" class="flex-1 flex flex-col bg-white hidden animate-slide-up">
+<div class="flex items-center justify-between p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+<button onclick="prevStep()" class="w-10 h-10 flex items-center justify-center active-scale">
+<i class="fas fa-arrow-left text-xl"></i>
+</button>
+<span class="font-bold">Details</span>
+<button onclick="nextStep()" class="text-red-500 font-semibold active-scale px-2">Next</button>
+</div>
+
+<div class="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+<div>
+<label class="block text-sm font-medium mb-2 text-gray-700">What are you selling?</label>
+<input type="text" id="mobileTitle" class="w-full text-lg font-semibold border-b-2 border-gray-200 focus:border-red-500 outline-none py-2 bg-transparent" placeholder="e.g., Vintage Nike Jacket">
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-2 text-gray-700">Description</label>
+<textarea id="mobileDesc" rows="3" class="w-full bg-gray-50 rounded-xl p-3 text-sm focus:ring-2 focus:ring-red-500/20 outline-none resize-none" placeholder="Brand, condition, measurements..."></textarea>
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-3 text-gray-700">Category</label>
+<div class="grid grid-cols-3 gap-2">
+<button onclick="selectCategory(this,'Women')" class="cat-btn py-3 px-2 rounded-xl bg-gray-100 text-sm font-medium text-center active-scale">Women</button>
+<button onclick="selectCategory(this,'Men')" class="cat-btn py-3 px-2 rounded-xl bg-gray-100 text-sm font-medium text-center active-scale">Men</button>
+<button onclick="selectCategory(this,'Home')" class="cat-btn py-3 px-2 rounded-xl bg-gray-100 text-sm font-medium text-center active-scale">Home</button>
+</div>
+</div>
+
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-sm font-medium mb-2 text-gray-700">Condition</label>
+<select class="w-full bg-gray-50 rounded-xl p-3 text-sm outline-none">
+<option>New with tags</option>
+<option>Like new</option>
+<option>Good</option>
+<option>Fair</option>
+</select>
+</div>
+<div>
+<label class="block text-sm font-medium mb-2 text-gray-700">Size</label>
+<button onclick="openSizePicker()" class="w-full bg-gray-50 rounded-xl p-3 text-sm text-left flex justify-between items-center active-scale">
+<span id="selectedSize">Select</span>
+<i class="fas fa-chevron-right text-gray-400"></i>
+</button>
+</div>
+</div>
+
+<div>
+<label class="block text-sm font-medium mb-3 text-gray-700">Color</label>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+<button onclick="selectColor(this)" class="color-btn w-10 h-10 rounded-full bg-black border-2 border-transparent flex-shrink-0 active-scale"></button>
+<button onclick="selectColor(this)" class="color-btn w-10 h-10 rounded-full bg-white border-2 border-gray-300 flex-shrink-0 active-scale"></button>
+<button onclick="selectColor(this)" class="color-btn w-10 h-10 rounded-full bg-red-500 border-2 border-transparent flex-shrink-0 active-scale"></button>
+<button onclick="selectColor(this)" class="color-btn w-10 h-10 rounded-full bg-blue-500 border-2 border-transparent flex-shrink-0 active-scale"></button>
+<button onclick="selectColor(this)" class="color-btn w-10 h-10 rounded-full bg-green-500 border-2 border-transparent flex-shrink-0 active-scale"></button>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 3: Pricing -->
+<div id="stepPricing" class="flex-1 flex flex-col bg-white hidden animate-slide-up">
+<div class="flex items-center justify-between p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+<button onclick="prevStep()" class="w-10 h-10 flex items-center justify-center active-scale">
+<i class="fas fa-arrow-left text-xl"></i>
+</button>
+<span class="font-bold">Price</span>
+<button onclick="nextStep()" class="text-red-500 font-semibold active-scale px-2">Next</button>
+</div>
+
+<div class="flex-1 overflow-y-auto p-4 space-y-6 pb-24">
+<div class="text-center py-8">
+<p class="text-gray-500 mb-2">Your listing price</p>
+<div class="flex items-center justify-center gap-1">
+<span class="text-4xl font-bold text-gray-400">$</span>
+<input type="number" id="mobilePrice" class="text-5xl font-bold text-center w-48 outline-none placeholder-gray-300" placeholder="0" oninput="calculateEarnings(this.value)">
+</div>
+</div>
+
+<div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
+<div class="flex justify-between items-center mb-4">
+<span class="text-green-800 font-medium">You'll earn</span>
+<span class="text-3xl font-bold text-green-700" id="mobileEarnings">$0.00</span>
+</div>
+<div class="space-y-2 text-sm text-green-700">
+<div class="flex justify-between"><span>Listing price</span><span id="breakdownPrice">$0.00</span></div>
+<div class="flex justify-between"><span>deadpan fee (10%)</span><span id="breakdownFee">-$0.00</span></div>
+</div>
+</div>
+
+<div>
+<p class="text-sm font-medium mb-3 text-gray-700">Buyers will see:</p>
+<div class="grid grid-cols-2 gap-3">
+<div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-2xl">🇪🇺</span>
+<span class="text-xs text-blue-600 font-medium">Europe</span>
+</div>
+<p class="text-xl font-bold text-blue-700" id="previewEUR">€0.00</p>
+</div>
+<div class="bg-purple-50 rounded-xl p-4 border border-purple-100">
+<div class="flex items-center gap-2 mb-1">
+<span class="text-2xl">🇬🇧</span>
+<span class="text-xs text-purple-600 font-medium">UK</span>
+</div>
+<p class="text-xl font-bold text-purple-700" id="previewGBP">£0.00</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Step 4: Shipping -->
+<div id="stepShipping" class="flex-1 flex flex-col bg-white hidden animate-slide-up">
+<div class="flex items-center justify-between p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+<button onclick="prevStep()" class="w-10 h-10 flex items-center justify-center active-scale">
+<i class="fas fa-arrow-left text-xl"></i>
+</button>
+<span class="font-bold">Shipping</span>
+<button onclick="showReview()" class="text-red-500 font-semibold active-scale px-2">Review</button>
+</div>
+
+<div class="flex-1 overflow-y-auto p-4 space-y-4 pb-24">
+<div class="bg-gray-50 rounded-xl p-4">
+<label class="block text-sm font-medium mb-2 text-gray-700">Ship from</label>
+<button onclick="openCountryPicker()" class="w-full flex items-center justify-between bg-white rounded-lg p-3 border border-gray-200 active-scale">
+<div class="flex items-center gap-3">
+<span class="text-2xl" id="selectedFlag">🇺🇸</span>
+<span class="font-medium" id="selectedCountry">United States</span>
+</div>
+<i class="fas fa-chevron-right text-gray-400"></i>
+</button>
+</div>
+
+<div class="space-y-3">
+<p class="text-sm font-medium text-gray-700">Shipping destinations</p>
+
+<label class="flex items-start gap-3 p-4 bg-red-500/5 border-2 border-red-500 rounded-xl cursor-pointer active-scale">
+<input type="radio" name="shipOption" value="global" checked class="mt-1 w-5 h-5 text-red-500">
+<div class="flex-1">
+<div class="flex items-center justify-between mb-1">
+<span class="font-bold text-red-500">Ship Worldwide 🌍</span>
+<span class="text-xs bg-red-500 text-white px-2 py-1 rounded-full">Best</span>
+</div>
+<p class="text-xs text-gray-600">Reach 180 countries. deadpan handles customs.</p>
+</div>
+</label>
+
+<label class="flex items-start gap-3 p-4 bg-gray-50 border-2 border-transparent rounded-xl cursor-pointer active-scale">
+<input type="radio" name="shipOption" value="local" class="mt-1 w-5 h-5 text-red-500">
+<div class="flex-1">
+<span class="font-bold block mb-1">Local Pickup Only</span>
+<p class="text-xs text-gray-600">No shipping, cash on collection</p>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Step 5: Review -->
+<div id="stepReview" class="flex-1 flex flex-col bg-gray-50 hidden animate-slide-up">
+<div class="flex items-center justify-between p-4 bg-white border-b border-gray-100 sticky top-0 z-10">
+<button onclick="prevStep()" class="w-10 h-10 flex items-center justify-center active-scale">
+<i class="fas fa-arrow-left text-xl"></i>
+</button>
+<span class="font-bold">Review</span>
+<div class="w-10"></div>
+</div>
+
+<div class="flex-1 overflow-y-auto p-4 space-y-4 pb-32">
+<div class="bg-white rounded-2xl overflow-hidden shadow-sm">
+<div class="aspect-square bg-gray-100 relative">
+<img id="reviewMainImage" src="" class="w-full h-full object-cover hidden">
+<div id="reviewImagePlaceholder" class="w-full h-full flex items-center justify-center text-gray-400">
+<i class="fas fa-image text-4xl"></i>
+</div>
+<div class="absolute top-4 right-4 bg-black/70 text-white text-xs px-3 py-1 rounded-full backdrop-blur-sm">
+<i class="fas fa-globe mr-1"></i> Global
+</div>
+</div>
+<div class="p-4">
+<div class="flex justify-between items-start mb-2">
+<h3 class="font-bold text-lg" id="reviewTitleMobile">Item Title</h3>
+<span class="text-2xl font-bold text-red-500" id="reviewPriceMobile">$0</span>
+</div>
+<p class="text-gray-500 text-sm mb-3" id="reviewDetails">Category • Size • Condition</p>
+<div class="border-t border-gray-100 pt-3 space-y-2 text-sm">
+<div class="flex justify-between">
+<span class="text-gray-500">You earn</span>
+<span class="font-bold text-green-600" id="reviewEarningsMobile">$0.00</span>
+</div>
+<div class="flex justify-between">
+<span class="text-gray-500">Shipping</span>
+<span class="font-medium">Worldwide</span>
+</div>
+</div>
+</div>
+</div>
+
+<label class="flex items-start gap-3 cursor-pointer">
+<input type="checkbox" id="agreeTerms" class="mt-1 w-5 h-5 rounded border-gray-300 text-red-500 focus:ring-red-500" onchange="validateReview()">
+<span class="text-sm text-gray-600">I confirm this item is authentic and accurately described.</span>
+</label>
+</div>
+
+<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 safe-bottom">
+<button onclick="publishListing()" id="publishMobileBtn" disabled class="w-full py-4 bg-gray-300 text-white rounded-full font-bold text-lg transition-all disabled:opacity-50 active-scale flex items-center justify-center gap-2">
+<i class="fas fa-globe"></i>
+Publish Globally
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Sheets -->
+<div id="sizePicker" class="fixed inset-0 z-[110] hidden">
+<div class="absolute inset-0 bg-black/50" onclick="closeSizePicker()"></div>
+<div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl p-6 animate-slide-up safe-bottom">
+<div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6"></div>
+<h3 class="text-xl font-bold mb-4">Select Size</h3>
+<div class="grid grid-cols-4 gap-3 mb-4" id="sizeGrid"></div>
+<button onclick="closeSizePicker()" class="w-full py-3 bg-gray-100 rounded-full font-semibold active-scale">Cancel</button>
+</div>
+</div>
+
+<div id="countryPicker" class="fixed inset-0 z-[110] hidden">
+<div class="absolute inset-0 bg-black/50" onclick="closeCountryPicker()"></div>
+<div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl h-[70vh] flex flex-col animate-slide-up">
+<div class="p-4 border-b border-gray-100">
+<div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+<h3 class="text-xl font-bold">Select Country</h3>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-2" id="countryList"></div>
+</div>
+</div>
+
+<!-- Success Modal -->
+<div id="successModalMobile" class="fixed inset-0 z-[120] bg-black/80 hidden items-center justify-center p-6 backdrop-blur-sm">
+<div class="bg-white rounded-3xl w-full max-w-sm p-6 text-center animate-slide-up">
+<div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="fas fa-check text-3xl text-green-500"></i>
+</div>
+<h3 class="text-2xl font-bold mb-2">Listed! 🌍</h3>
+<p class="text-gray-600 text-sm mb-6">Your item is now live in 180 countries</p>
+<div class="bg-gray-50 rounded-xl p-4 mb-6 text-left space-y-2">
+<div class="flex justify-between text-sm">
+<span class="text-gray-500">Listing ID</span>
+<span class="font-mono font-bold" id="successListingId">#DP-12345</span>
+</div>
+<div class="flex justify-between text-sm">
+<span class="text-gray-500">Global reach</span>
+<span class="text-red-500 font-bold">180 countries</span>
+</div>
+</div>
+<div class="space-y-3">
+<button onclick="closeSuccessAndContinue()" class="w-full py-3 bg-red-500 text-white rounded-full font-semibold active-scale">View Listing</button>
+<button onclick="closeSuccessAndNew()" class="w-full py-3 border border-gray-300 rounded-full font-medium active-scale">Sell Another</button>
+</div>
+</div>
+</div>
+
+<!-- FAB -->
+<button onclick="openSellingInterface()" id="mainFab" class="fab fixed bottom-6 right-6 w-14 h-14 bg-red-500 text-white rounded-full flex items-center justify-center text-2xl z-30 active-scale">
+<i class="fas fa-camera"></i>
+</button>
+<script>
+let currentStep=1;
+let selectedPhotos=[];
+let currentCategory='';
+let selectedSize='';
+let selectedCountry={code:'US',name:'United States',flag:'🇺🇸'};
+
+const sizes={
+'Women':['XXS','XS','S','M','L','XL','XXL','One Size'],
+'Men':['XS','S','M','L','XL','XXL','XXXL','One Size'],
+'Home':['Small','Medium','Large','One Size']
+};
+
+const countries=[
+{code:'US',name:'United States',flag:'🇺🇸'},
+{code:'CA',name:'Canada',flag:'🇨🇦'},
+{code:'GB',name:'United Kingdom',flag:'🇬🇧'},
+{code:'DE',name:'Germany',flag:'🇩🇪'},
+{code:'FR',name:'France',flag:'🇫🇷'},
+{code:'AU',name:'Australia',flag:'🇦🇺'},
+{code:'JP',name:'Japan',flag:'🇯🇵'},
+{code:'KR',name:'South Korea',flag:'🇰🇷'},
+{code:'BR',name:'Brazil',flag:'🇧🇷'},
+{code:'MX',name:'Mexico',flag:'🇲🇽'}
+];
+
+setInterval(()=>{
+const now=new Date();
+const hours=now.getHours();
+const minutes=now.getMinutes().toString().padStart(2,'0');
+document.getElementById('clock').textContent=`${hours}:${minutes}`;
+},1000);
+
+function renderFeedProducts(){
+const products=[
+{image:'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400',title:'Vintage Leather Jacket',price:85,size:'M',seller:'vintage_vibes',avatar:'https://i.pravatar.cc/150?img=1',location:'🇺🇸',likes:234},
+{image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400',title:'Nike Air Max 90',price:120,size:'10',seller:'sneakerhead',avatar:'https://i.pravatar.cc/150?img=2',location:'🇬🇧',likes:567},
+{image:'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',title:'Band Tee Vintage',price:35,size:'L',seller:'thriftqueen',avatar:'https://i.pravatar.cc/150?img=3',location:'🇯🇵',likes:89}
+];
+
+document.getElementById('productList').innerHTML=products.map(p=>`
+<div class="bg-white rounded-2xl overflow-hidden shadow-sm active-scale">
+<div class="relative aspect-[4/5]">
+<img src="${p.image}" class="w-full h-full object-cover">
+<div class="absolute top-3 left-3 bg-black/60 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">${p.location} Worldwide</div>
+<button class="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center active-scale">
+<i class="far fa-heart text-gray-600"></i>
+</button>
+</div>
+<div class="p-4">
+<h3 class="font-bold text-lg mb-1">${p.title}</h3>
+<div class="flex justify-between items-center">
+<span class="text-2xl font-bold text-red-500">$${p.price}</span>
+<span class="text-sm text-gray-500 border border-gray-200 px-2 py-1 rounded-lg">${p.size}</span>
+</div>
+</div>
+</div>
+`).join('');
+}
+
+function openSellingInterface(){
+document.getElementById('sellingInterface').classList.remove('hidden');
+document.getElementById('sellingInterface').classList.add('flex');
+document.getElementById('mainFab').classList.add('hidden');
+currentStep=1;
+showStep(1);
+}
+
+function closeSellingInterface(){
+document.getElementById('sellingInterface').classList.add('hidden');
+document.getElementById('sellingInterface').classList.remove('flex');
+document.getElementById('mainFab').classList.remove('hidden');
+resetForm();
+}
+
+function showStep(step){
+['stepPhoto','stepDetails','stepPricing','stepShipping','stepReview'].forEach(id=>{
+document.getElementById(id).classList.add('hidden');
+});
+document.getElementById(['stepPhoto','stepDetails','stepPricing','stepShipping','stepReview'][step-1]).classList.remove('hidden');
+currentStep=step;
+}
+
+function nextStep(){
+if(currentStep<5)showStep(currentStep+1);
+}
+
+function prevStep(){
+if(currentStep>1)showStep(currentStep-1);
+else closeSellingInterface();
+}
+
+function triggerFileInput(){
+document.getElementById('mobileFileInput').click();
+}
+
+function handleMobilePhotos(input){
+const files=Array.from(input.files);
+files.forEach(file=>{
+if(selectedPhotos.length<8){
+const reader=new FileReader();
+reader.onload=(e)=>{
+selectedPhotos.push(e.target.result);
+updateThumbnails();
+if(selectedPhotos.length===1){
+document.getElementById('mainPreview').src=e.target.result;
+document.getElementById('mainPreview').classList.remove('hidden');
+document.getElementById('cameraPlaceholder').classList.add('hidden');
+document.getElementById('photoNextBtn').disabled=false;
+}
+};
+reader.readAsDataURL(file);
+}
+});
+}
+
+function updateThumbnails(){
+const container=document.getElementById('photoThumbnails');
+const html=selectedPhotos.map((photo,idx)=>`
+<div class="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden relative border-2 ${idx===0?'border-red-500':'border-transparent'}">
+<img src="${photo}" class="w-full h-full object-cover">
+<button onclick="removePhoto(${idx})" class="absolute top-1 right-1 w-5 h-5 bg-black/50 rounded-full flex items-center justify-center text-white text-xs">
+<i class="fas fa-times"></i>
+</button>
+</div>
+`).join('');
+
+container.innerHTML=html+`
+<button onclick="triggerFileInput()" class="flex-shrink-0 w-20 h-20 rounded-xl border-2 border-dashed border-white/30 flex flex-col items-center justify-center text-white/60 active-scale">
+<i class="fas fa-plus mb-1"></i>
+<span class="text-[10px]">Add</span>
+</button>
+`;
+}
+
+function removePhoto(idx){
+selectedPhotos.splice(idx,1);
+updateThumbnails();
+if(selectedPhotos.length===0){
+document.getElementById('mainPreview').classList.add('hidden');
+document.getElementById('cameraPlaceholder').classList.remove('hidden');
+document.getElementById('photoNextBtn').disabled=true;
+}else{
+document.getElementById('mainPreview').src=selectedPhotos[0];
+}
+}
+
+function selectCategory(btn,cat){
+document.querySelectorAll('.cat-btn').forEach(b=>{
+b.classList.remove('bg-red-500','text-white');
+b.classList.add('bg-gray-100');
+});
+btn.classList.remove('bg-gray-100');
+btn.classList.add('bg-red-500','text-white');
+currentCategory=cat;
+}
+
+function selectColor(btn){
+document.querySelectorAll('.color-btn').forEach(b=>b.classList.remove('ring-2','ring-offset-2','ring-red-500'));
+btn.classList.add('ring-2','ring-offset-2','ring-red-500');
+}
+
+function openSizePicker(){
+if(!currentCategory){alert('Select category first');return;}
+const sizeList=sizes[currentCategory]||sizes['Women'];
+document.getElementById('sizeGrid').innerHTML=sizeList.map(s=>`
+<button onclick="selectSize('${s}')" class="py-3 rounded-xl bg-gray-100 font-medium active-scale border-2 border-transparent hover:border-red-500">${s}</button>
+`).join('');
+document.getElementById('sizePicker').classList.remove('hidden');
+}
+
+function closeSizePicker(){
+document.getElementById('sizePicker').classList.add('hidden');
+}
+
+function selectSize(size){
+selectedSize=size;
+document.getElementById('selectedSize').textContent=size;
+closeSizePicker();
+}
+
+function calculateEarnings(val){
+const price=parseFloat(val)||0;
+const earnings=price*0.9;
+const fee=price*0.1;
+
+document.getElementById('mobileEarnings').textContent=`$${earnings.toFixed(2)}`;
+document.getElementById('breakdownPrice').textContent=`$${price.toFixed(2)}`;
+document.getElementById('breakdownFee').textContent=`-$${fee.toFixed(2)}`;
+
+document.getElementById('previewEUR').textContent=`€${(price*0.92).toFixed(2)}`;
+document.getElementById('previewGBP').textContent=`£${(price*0.79).toFixed(2)}`;
+}
+
+function openCountryPicker(){
+document.getElementById('countryList').innerHTML=countries.map(c=>`
+<button onclick="selectCountry('${c.code}')" class="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 active-scale ${selectedCountry.code===c.code?'bg-gray-50 border-2 border-red-500':''}">
+<span class="text-2xl">${c.flag}</span>
+<span class="font-medium">${c.name}</span>
+${selectedCountry.code===c.code?'<i class="fas fa-check text-red-500 ml-auto"></i>':''}
+</button>
+`).join('');
+document.getElementById('countryPicker').classList.remove('hidden');
+}
+
+function closeCountryPicker(){
+document.getElementById('countryPicker').classList.add('hidden');
+}
+
+function selectCountry(code){
+selectedCountry=countries.find(c=>c.code===code);
+document.getElementById('selectedFlag').textContent=selectedCountry.flag;
+document.getElementById('selectedCountry').textContent=selectedCountry.name;
+closeCountryPicker();
+}
+
+function showReview(){
+const title=document.getElementById('mobileTitle').value||'Item Title';
+const price=document.getElementById('mobilePrice').value||'0';
+const earnings=document.getElementById('mobileEarnings').textContent;
+
+document.getElementById('reviewTitleMobile').textContent=title;
+document.getElementById('reviewPriceMobile').textContent=`$${price}`;
+document.getElementById('reviewEarningsMobile').textContent=earnings;
+document.getElementById('reviewDetails').textContent=`${currentCategory||'Category'} • ${selectedSize||'Size'} • New`;
+
+if(selectedPhotos.length>0){
+document.getElementById('reviewMainImage').src=selectedPhotos[0];
+document.getElementById('reviewMainImage').classList.remove('hidden');
+document.getElementById('reviewImagePlaceholder').classList.add('hidden');
+}
+
+showStep(5);
+}
+
+function validateReview(){
+const checked=document.getElementById('agreeTerms').checked;
+const btn=document.getElementById('publishMobileBtn');
+btn.disabled=!checked;
+btn.classList.toggle('bg-red-500',checked);
+btn.classList.toggle('bg-gray-300',!checked);
+}
+
+function publishListing(){
+const id='#DP-'+Math.random().toString(36).substr(2,5).toUpperCase();
+document.getElementById('successListingId').textContent=id;
+document.getElementById('successModalMobile').classList.remove('hidden');
+document.getElementById('successModalMobile').classList.add('flex');
+}
+
+function closeSuccessAndContinue(){
+document.getElementById('successModalMobile').classList.add('hidden');
+document.getElementById('successModalMobile').classList.remove('flex');
+closeSellingInterface();
+}
+
+function closeSuccessAndNew(){
+document.getElementById('successModalMobile').classList.add('hidden');
+document.getElementById('successModalMobile').classList.remove('flex');
+resetForm();
+showStep(1);
+}
+
+function resetForm(){
+selectedPhotos=[];
+currentCategory='';
+selectedSize='';
+document.getElementById('mobileTitle').value='';
+document.getElementById('mobileDesc').value='';
+document.getElementById('mobilePrice').value='';
+document.getElementById('mainPreview').classList.add('hidden');
+document.getElementById('cameraPlaceholder').classList.remove('hidden');
+document.getElementById('photoNextBtn').disabled=true;
+updateThumbnails();
+calculateEarnings(0);
+}
+
+renderFeedProducts();
+</script>
+
+</body>
+</html>
